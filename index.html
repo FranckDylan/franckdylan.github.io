@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorateur Interactif : Optimisation de l'Extraction de Clauses Contractuelles par l'IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Visualization & Content Choices:
+    - Report Info: Résumé Exécutif (Sec I) -> Goal: Inform -> Presentation: Introductory text -> Interaction: Navigation -> Justification: Sets context.
+    - Report Info: Défi de l'Extraction Manuelle (Sec II) -> Goal: Highlight Problem -> Presentation: Bullet points on inefficiencies, costs, risks -> Interaction: Static text -> Justification: Clearly presents the core problem.
+    - Report Info: NotebookLM (Sec III.A, Table) -> Goal: Detail Tool -> Presentation: Text summary, HTML table for features/limitations -> Interaction: Tab navigation -> Justification: Structured presentation of tool.
+    - Report Info: Google Document AI (Sec III.B, Table) -> Goal: Detail Tool -> Presentation: Text summary, HTML table for CDE process -> Interaction: Tab navigation -> Justification: Structured presentation of tool.
+    - Report Info: Plateformes Spécialisées (Sec IV.A, Table) -> Goal: Detail Tool Category -> Presentation: Text summary, HTML table for platform examples -> Interaction: Tab navigation, clickable cards for details -> Justification: Comparative overview.
+    - Report Info: RPA & Python (Sec IV.B) -> Goal: Detail Tool Category -> Presentation: Text summary of RPA and Python libraries/benefits -> Interaction: Tab navigation -> Justification: Details on alternative/complementary tools.
+    - Report Info: Mise en Œuvre Pratique (Sec V, Tables) -> Goal: Guide Implementation -> Presentation: Accordions for Data Prep, Extraction/Validation, Excel Integration; HTML table for example fields -> Interaction: Accordions -> Justification: Actionable guidance, structured data.
+    - Report Info: Conclusion et Recommandations (Sec VI) -> Goal: Summarize, Action -> Presentation: Text summary, numbered list of recommendations with expandable details -> Interaction: Accordions -> Justification: Clear takeaways.
+    - Method: All textual content adapted directly from the report `27d2c754-0a63-4ce6-86cc-904498203934`. Layout via Tailwind. Interactivity via vanilla JS. Tables via HTML. NO SVG/Mermaid. NO Chart.js as the report is qualitative. -->
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-button.active { background-color: #0284c7; color: white; } /* sky-600 for active nav */
+        .tab-button.active { border-color: #f59e0b; color: #f59e0b; } /* amber-500 for active tab */
+        .content-section { display: none; }
+        .content-section.active { display: block; }
+        .solution-tab-content { display: none; }
+        .solution-tab-content.active { display: block; }
+        .table-responsive-wrapper { overflow-x: auto; }
+        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .accordion-header svg { transition: transform 0.3s ease-out; }
+        .accordion-header.open svg { transform: rotate(180deg); }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <header class="bg-sky-700 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <h1 class="text-xl sm:text-2xl font-bold">Extraction de Clauses par l'IA</h1>
+                <nav class="hidden md:flex space-x-2">
+                    <button data-target="accueil" class="nav-button px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600 active">Accueil</button>
+                    <button data-target="defi" class="nav-button px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600">Le Défi</button>
+                    <button data-target="outils-ia" class="nav-button px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600">Outils IA</button>
+                    <button data-target="implementation" class="nav-button px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600">Mise en Œuvre</button>
+                    <button data-target="conclusion" class="nav-button px-3 py-2 rounded-md text-sm font-medium hover:bg-sky-600">Conclusion</button>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-sky-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="md:hidden hidden bg-sky-700">
+            <button data-target="accueil" class="block nav-button w-full text-left px-4 py-3 text-base font-medium hover:bg-sky-600 active">Accueil</button>
+            <button data-target="defi" class="block nav-button w-full text-left px-4 py-3 text-base font-medium hover:bg-sky-600">Le Défi</button>
+            <button data-target="outils-ia" class="block nav-button w-full text-left px-4 py-3 text-base font-medium hover:bg-sky-600">Outils IA</button>
+            <button data-target="implementation" class="block nav-button w-full text-left px-4 py-3 text-base font-medium hover:bg-sky-600">Mise en Œuvre</button>
+            <button data-target="conclusion" class="block nav-button w-full text-left px-4 py-3 text-base font-medium hover:bg-sky-600">Conclusion</button>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <section id="accueil" class="content-section active">
+            <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-sky-700 mb-6">Optimisation de l'Extraction de Clauses Contractuelles par l'IA</h2>
+                <p class="text-lg text-slate-700 mb-4">
+                    Bienvenue dans cet explorateur interactif. La gestion de contrats, surtout en début de mission, implique souvent la lecture fastidieuse de centaines de pages pour extraire des informations clés. Ce processus manuel est non seulement chronophage mais aussi source d'erreurs.
+                </p>
+                <p class="text-lg text-slate-700 mb-4">
+                    Cette application vous guidera à travers les solutions d'intelligence artificielle qui peuvent transformer radicalement cette tâche. Nous explorerons comment des outils comme NotebookLM, Google Document AI, et d'autres plateformes spécialisées peuvent automatiser l'extraction, améliorer la précision, et permettre aux professionnels de se concentrer sur des analyses à plus forte valeur ajoutée.
+                </p>
+                 <p class="text-lg text-slate-700">
+                    Utilisez la navigation ci-dessus pour explorer les différentes sections : le défi actuel, les outils IA disponibles, leur mise en œuvre pratique, et les conclusions et recommandations.
+                </p>
+            </div>
+        </section>
+
+        <section id="defi" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-sky-700 mb-6">Le Défi de l'Extraction Manuelle de Contrats</h2>
+                <p class="text-lg text-slate-700 mb-6">L'extraction manuelle de clauses à partir de contrats volumineux pour établir une grille de suivi Excel est un processus "hyper chronophage" et constitue un goulot d'étranglement opérationnel majeur. Cette section détaille les impacts de cette approche.</p>
+                
+                <div class="bg-amber-50 p-6 rounded-lg shadow mb-6">
+                    <h3 class="text-xl font-semibold text-amber-700 mb-3">Un Processus Coûteux et Risqué</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>**Lenteur et erreurs :** La lecture manuelle est intrinsèquement lente et sujette aux erreurs humaines. Le document `Base Projet contrat AEP.docx` avec son sommaire détaillé illustre cette complexité.</li>
+                        <li>**Coûts opérationnels élevés :** Temps de personnel important et retards dans la mise en œuvre des suivis.</li>
+                        <li>**Risques juridiques et financiers :** Des erreurs ou omissions peuvent avoir des conséquences considérables (litiges, responsabilités).</li>
+                        <li>**Entrave à la réactivité :** Difficulté à réagir rapidement aux obligations contractuelles ou à saisir des opportunités.</li>
+                        <li>**Dépendance à l'expertise :** Risque de perte de connaissance si les experts quittent l'organisation.</li>
+                        <li>**Complexification des audits :** La vérification des données est difficile sans source structurée, augmentant les risques de non-conformité.</li>
+                    </ul>
+                </div>
+                 <p class="text-lg text-slate-700">
+                    L'automatisation, grâce à l'IA, vise à transformer ce suivi contractuel d'une fonction réactive en une fonction proactive et stratégique, permettant une meilleure anticipation des échéances et des risques.
+                </p>
+            </div>
+        </section>
+
+        <section id="outils-ia" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-sky-700 mb-6">Exploration des Outils IA Spécifiques</h2>
+                <p class="text-lg text-slate-700 mb-6">Plusieurs outils d'intelligence artificielle peuvent révolutionner l'extraction de clauses contractuelles. Cette section explore en détail NotebookLM, Google Document AI, ainsi que d'autres plateformes spécialisées et approches complémentaires.</p>
+
+                <div class="mb-6 border-b border-slate-300">
+                    <nav class="-mb-px flex space-x-2 sm:space-x-4 overflow-x-auto" aria-label="Tabs">
+                        <button class="solution-tab-button active whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300" data-solutiontarget="notebooklm">NotebookLM</button>
+                        <button class="solution-tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300" data-solutiontarget="document-ai">Document AI</button>
+                        <button class="solution-tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300" data-solutiontarget="plateformes-spec">Plateformes Spécialisées</button>
+                        <button class="solution-tab-button whitespace-nowrap py-3 px-2 border-b-2 font-medium text-sm border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300" data-solutiontarget="rpa-python">RPA & Python</button>
+                    </nav>
+                </div>
+
+                <div id="notebooklm" class="solution-tab-content active">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-4">NotebookLM : Analyse Documentaire et Synthèse</h3>
+                    <p class="text-slate-700 mb-4">NotebookLM, alimenté par Gemini 1.5 Pro, est conçu pour comprendre et synthétiser des informations à partir de divers documents (Google Drive, PDF, web, transcriptions vidéo). Il est idéal pour une "première passe" de compréhension rapide.</p>
+                    <p class="text-slate-600 italic mb-4">Fonctionnalités clés : Résumés automatiques, Questions-Réponses (Q&A) avec citations vers les sources, organisation de notes, identification de thèmes.</p>
+                    
+                    <div class="table-responsive-wrapper rounded-md border border-slate-300 mb-4">
+                        <table class="min-w-full divide-y divide-slate-200 bg-white">
+                            <caption class="caption-top text-left p-2 font-semibold text-slate-700 bg-slate-100">Capacités de NotebookLM pour la Revue Préliminaire des Contrats</caption>
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Fonctionnalité</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Pertinence pour la Revue Contractuelle</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Limitations pour l'Extraction Structurée</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Résumé automatique</td><td class="px-4 py-2 text-sm text-slate-600">Compréhension rapide des clauses et sections clés.</td><td class="px-4 py-2 text-sm text-slate-600">Pas d'export CSV/Excel natif pour champs précis.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Questions-Réponses (Q&A)</td><td class="px-4 py-2 text-sm text-slate-600">Recherche ciblée et clarification.</td><td class="px-4 py-2 text-sm text-slate-600">Difficulté avec schémas d'extraction complexes.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Organisation des notes</td><td class="px-4 py-2 text-sm text-slate-600">Structuration des observations.</td><td class="px-4 py-2 text-sm text-slate-600">Pas de connexion d'infos entre notebooks.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Identification des thèmes</td><td class="px-4 py-2 text-sm text-slate-600">Détection des sujets récurrents.</td><td class="px-4 py-2 text-sm text-slate-600">Validation humaine forte nécessaire.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Génération d'audio</td><td class="px-4 py-2 text-sm text-slate-600">Revue auditive rapide.</td><td class="px-4 py-2 text-sm text-slate-600">Non pertinent pour extraction structurée.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-slate-700">Bien qu'excellent pour la synthèse, NotebookLM n'est pas optimisé pour l'extraction structurée de données vers Excel. La vérification humaine des informations reste cruciale.</p>
+                </div>
+
+                <div id="document-ai" class="solution-tab-content">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-4">Google Document AI : Extraction Structurée et Personnalisable</h3>
+                    <p class="text-slate-700 mb-4">Google Document AI transforme les données non structurées (PDF, images) en données structurées grâce à l'OCR, au Machine Learning et au NLP. Il permet de construire des extracteurs personnalisés (Custom Document Extractors - CDE) pour des documents spécifiques comme les contrats.</p>
+                    <p class="text-slate-600 italic mb-4">Processus CDE : Définition de schéma, annotation de documents d'exemple, entraînement du modèle, déploiement. Sortie en JSON, Excel, ou vers bases de données.</p>
+
+                    <div class="table-responsive-wrapper rounded-md border border-slate-300 mb-4">
+                        <table class="min-w-full divide-y divide-slate-200 bg-white">
+                            <caption class="caption-top text-left p-2 font-semibold text-slate-700 bg-slate-100">Processus d'Extraction avec Google Document AI Workbench</caption>
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Étape</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Description</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Considérations Clés</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Création du processeur</td><td class="px-4 py-2 text-sm text-slate-600">Créer un Custom Document Extractor.</td><td class="px-4 py-2 text-sm text-slate-600">Nommer, sélectionner région.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Définition du schéma</td><td class="px-4 py-2 text-sm text-slate-600">Spécifier les champs à extraire.</td><td class="px-4 py-2 text-sm text-slate-600">Type de donnée, occurrence par champ.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Importation et labellisation</td><td class="px-4 py-2 text-sm text-slate-600">Télécharger et annoter des exemples.</td><td class="px-4 py-2 text-sm text-slate-600">Plus de documents = meilleure précision. Vérification humaine.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Entraînement du modèle</td><td class="px-4 py-2 text-sm text-slate-600">Lancer l'entraînement du processeur.</td><td class="px-4 py-2 text-sm text-slate-600">Le modèle apprend à partir des labellisations.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Déploiement et utilisation</td><td class="px-4 py-2 text-sm text-slate-600">Déployer pour traiter de nouveaux documents.</td><td class="px-4 py-2 text-sm text-slate-600">Utilisation via API pour automatisation.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Exportation des données</td><td class="px-4 py-2 text-sm text-slate-600">Récupérer en JSON, convertir vers CSV/Excel.</td><td class="px-4 py-2 text-sm text-slate-600">Conversion via `pandas` ou `json2csv`.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-slate-700">La capacité à créer des CDE est une force majeure, permettant une adaptation précise aux contrats de l'entreprise. La validation humaine ("human in the loop") reste indispensable.</p>
+                </div>
+                
+                <div id="plateformes-spec" class="solution-tab-content">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-4">Plateformes Spécialisées en IA Juridique</h3>
+                    <p class="text-slate-700 mb-4">De nombreuses plateformes IA sont spécifiquement conçues pour le domaine juridique, utilisant NLP et LLM pour analyser, rédiger et gérer des contrats. Elles offrent souvent des fonctionnalités avancées d'extraction, de conformité et de gestion du cycle de vie.</p>
+                    
+                    <div class="table-responsive-wrapper rounded-md border border-slate-300 mb-4">
+                         <table class="min-w-full divide-y divide-slate-200 bg-white">
+                            <caption class="caption-top text-left p-2 font-semibold text-slate-700 bg-slate-100">Exemples de Plateformes d'IA Juridique et leurs Spécialisations</caption>
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Plateforme</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Spécialisation</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Fonctionnalités Clés pour l'Extraction</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-200">
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">Clio Draft</td><td class="px-4 py-2 text-sm text-slate-600">Intégration PMS</td><td class="px-4 py-2 text-sm text-slate-600">Conversion Word vers modèle, pré-remplissage.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">HotDocs</td><td class="px-4 py-2 text-sm text-slate-600">Modélisation complexe</td><td class="px-4 py-2 text-sm text-slate-600">Création de modèles robustes, calculs sophistiqués.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">LegalFly</td><td class="px-4 py-2 text-sm text-slate-600">Revue rapide et personnalisation</td><td class="px-4 py-2 text-sm text-slate-600">Revue de centaines de contrats, modèles personnalisables.</td></tr>
+                                <tr><td class="px-4 py-2 text-sm text-slate-600">V7 Go</td><td class="px-4 py-2 text-sm text-slate-600">Agents IA pour travail de connaissance</td><td class="px-4 py-2 text-sm text-slate-600">Extraction sophistiquée, analyse approfondie, citations.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-slate-700">D'autres outils comme Juro, Luminance, Kira Systems, ContractPodAi offrent également des solutions robustes. Ces plateformes transforment le rôle des juristes, les libérant pour des tâches stratégiques.</p>
+                </div>
+
+                <div id="rpa-python" class="solution-tab-content">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-4">Automatisation des Processus Robotiques (RPA) et Scripting Python</h3>
+                    <p class="text-slate-700 mb-4">La RPA et Python sont des approches complémentaires. La RPA (ex: Microsoft Power Automate) automatise le transfert de données vers Excel et d'autres tâches répétitives. Python offre une flexibilité maximale pour des solutions sur mesure.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-sky-50 p-4 rounded-lg shadow">
+                            <h4 class="font-medium text-sky-700 mb-2">RPA :</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>Imite les actions humaines pour automatiser les processus.</li>
+                                <li>Transfère les données extraites vers Excel, crée des rapports.</li>
+                                <li>Ex: Microsoft Power Automate.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-sky-50 p-4 rounded-lg shadow">
+                             <h4 class="font-medium text-sky-700 mb-2">Scripting Python :</h4>
+                            <ul class="list-disc list-inside text-sm text-slate-600 space-y-1">
+                                <li>`python-docx` / `docx2python`: Manipulent Word, extraient texte et formatage (surlignage).</li>
+                                <li>`docxtpl`: Génère des documents Word à partir de modèles.</li>
+                                <li>`pandas`: Nettoie, valide et manipule les données extraites.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p class="text-slate-600 italic mt-4">Une approche hybride (Document AI pour extraction, Python/RPA pour intégration) est souvent très efficace. L'extraction du texte surligné avec Python peut guider l'IA.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="implementation" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-sky-700 mb-6">Mise en Œuvre Pratique et Intégration</h2>
+                <p class="text-lg text-slate-700 mb-6">La réussite de l'automatisation de l'extraction de clauses contractuelles repose sur une préparation minutieuse des documents, une extraction rigoureuse et une intégration fluide avec les outils de suivi existants comme Excel. Cette section détaille les étapes clés.</p>
+
+                <div class="accordion-item bg-slate-100 rounded-lg shadow mb-4">
+                    <button class="accordion-header w-full text-left p-4 font-semibold text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                        Préparation des Documents et des Données
+                        <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content px-4 pb-4">
+                        <p class="text-slate-700 pt-3 mb-2">La qualité des documents source est cruciale. Les PDF scannés de mauvaise qualité peuvent nécessiter un prétraitement (amélioration d'image). Pour les documents Word, une structure cohérente (styles, titres) facilite l'extraction.</p>
+                        <p class="text-slate-700 mb-2">Définissez précisément les informations à extraire. Le `Sommaire Contrat AEP.xlsx` peut servir de base. Créez un schéma d'extraction clair (comme dans Document AI Workbench).</p>
+                        <h4 class="font-medium text-slate-600 my-2">Tableau : Exemples de Champs Contractuels à Extraire et Correspondance Excel</h4>
+                        <div class="table-responsive-wrapper rounded-md border border-slate-300">
+                            <table class="min-w-full divide-y divide-slate-200 bg-white">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Champ Contractuel</th>
+                                        <th class="px-3 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Colonne Excel</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200">
+                                    <tr><td class="px-3 py-2 text-sm text-slate-600">Numéro d'Article</td><td class="px-3 py-2 text-sm text-slate-600">Article_Num</td></tr>
+                                    <tr><td class="px-3 py-2 text-sm text-slate-600">Objet de l'Article</td><td class="px-3 py-2 text-sm text-slate-600">Objet_Article</td></tr>
+                                    <tr><td class="px-3 py-2 text-sm text-slate-600">Parties Impliquées</td><td class="px-3 py-2 text-sm text-slate-600">Parties_Contrat</td></tr>
+                                    <tr><td class="px-3 py-2 text-sm text-slate-600">Date d'Effet</td><td class="px-3 py-2 text-sm text-slate-600">Date_Debut_Contrat</td></tr>
+                                    <tr><td class="px-3 py-2 text-sm text-slate-600">Montant des Pénalités</td><td class="px-3 py-2 text-sm text-slate-600">Penalites_Montant</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-slate-100 rounded-lg shadow mb-4">
+                    <button class="accordion-header w-full text-left p-4 font-semibold text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                        Extraction et Validation des Données
+                        <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content px-4 pb-4">
+                        <p class="text-slate-700 pt-3 mb-2">Le flux de travail typique comprend :</p>
+                        <ol class="list-decimal list-inside space-y-1 text-slate-700">
+                            <li>Ingestion des documents dans l'outil IA.</li>
+                            <li>Prétraitement si nécessaire (améliorer qualité image OCR).</li>
+                            <li>Extraction initiale par l'IA selon le schéma défini.</li>
+                            <li>Conversion en format structuré (ex: JSON vers CSV).</li>
+                            <li>Nettoyage et validation des données (ex: avec `pandas` pour corriger erreurs, gérer valeurs manquantes).</li>
+                        </ol>
+                        <p class="text-slate-700 mt-2">La validation humaine ("human in the loop") est indispensable pour les documents juridiques. Des règles de validation automatisées peuvent aussi être implémentées.</p>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-slate-100 rounded-lg shadow">
+                    <button class="accordion-header w-full text-left p-4 font-semibold text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                        Intégration avec Excel et Outils de Suivi
+                        <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content px-4 pb-4">
+                        <p class="text-slate-700 pt-3 mb-2">Les données extraites peuvent être exportées vers Excel (CSV, API, RPA). Concevez une grille Excel facilitant le suivi :</p>
+                        <ul class="list-disc list-inside space-y-1 text-slate-700">
+                            <li>Utilisez la validation de données Excel (listes déroulantes, formats de date).</li>
+                            <li>Appliquez du formatage conditionnel (mettre en évidence dates d'échéance).</li>
+                            <li>Assurez la cohérence des en-têtes de colonnes et des types de données.</li>
+                        </ul>
+                        <p class="text-slate-700 mt-2">La grille Excel devient une interface interactive pour valider les extractions et déclencher des actions. L'automatisation permet une gestion proactive des contrats.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="conclusion" class="content-section">
+            <div class="bg-white shadow-xl rounded-lg p-6 sm:p-8">
+                <h2 class="text-2xl sm:text-3xl font-semibold text-sky-700 mb-6">Conclusion et Recommandations</h2>
+                <p class="text-lg text-slate-700 mb-6">L'optimisation de l'extraction de clauses contractuelles par l'IA est non seulement possible mais hautement bénéfique. Elle transforme une tâche chronophage en un processus efficient et précis.</p>
+                
+                <div class="bg-sky-50 p-6 rounded-lg shadow mb-6">
+                    <h3 class="text-xl font-semibold text-sky-600 mb-3">Synthèse des Solutions :</h3>
+                    <ul class="list-disc list-inside space-y-2 text-slate-700">
+                        <li>**Google Document AI :** Très pertinent pour l'extraction structurée, avec ses Custom Document Extractors et sa sortie JSON/CSV.</li>
+                        <li>**NotebookLM :** Excellent pour la compréhension préliminaire et la synthèse, mais moins pour l'extraction structurée vers Excel.</li>
+                        <li>**Plateformes Spécialisées IA Juridique :** Solutions complètes pour la gestion du cycle de vie des contrats, mais peuvent avoir un coût plus élevé.</li>
+                        <li>**RPA & Python :** Flexibilité pour des solutions sur mesure, notamment pour l'intégration avec Excel et la manipulation de formats spécifiques comme le texte surligné.</li>
+                    </ul>
+                </div>
+
+                <h3 class="text-xl font-semibold text-sky-600 mb-4">Recommandations Concrètes :</h3>
+                <div class="space-y-3">
+                    <div class="accordion-item bg-slate-100 rounded-lg shadow">
+                        <button class="accordion-header w-full text-left p-3 font-medium text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                            1. Phase Pilote avec Google Document AI
+                            <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-3 pb-3">
+                            <p class="text-sm text-slate-600 pt-2">Commencez par un projet ciblé. Sélectionnez des contrats représentatifs, définissez un schéma d'extraction et entraînez un Custom Document Extractor.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-slate-100 rounded-lg shadow">
+                        <button class="accordion-header w-full text-left p-3 font-medium text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                            2. Intégration Itérative et Validation Humaine
+                            <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-3 pb-3">
+                            <p class="text-sm text-slate-600 pt-2">Validez systématiquement les données extraites par des experts juridiques ("human in the loop") pour affiner le modèle.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-slate-100 rounded-lg shadow">
+                        <button class="accordion-header w-full text-left p-3 font-medium text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                            3. Automatisation du Flux vers Excel
+                             <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-3 pb-3">
+                            <p class="text-sm text-slate-600 pt-2">Utilisez des scripts Python (`pandas`) pour nettoyer/valider les données avant l'export CSV. Envisagez la RPA pour une automatisation complète de la saisie.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item bg-slate-100 rounded-lg shadow">
+                        <button class="accordion-header w-full text-left p-3 font-medium text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                            4. Exploration des Indicateurs Métiers
+                            <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-3 pb-3">
+                            <p class="text-sm text-slate-600 pt-2">Si le surlignage est utilisé, explorez son extraction via `python-docx` comme signal pour l'IA ou vérifications.</p>
+                        </div>
+                    </div>
+                     <div class="accordion-item bg-slate-100 rounded-lg shadow">
+                        <button class="accordion-header w-full text-left p-3 font-medium text-sky-700 hover:bg-slate-200 rounded-t-lg flex justify-between items-center">
+                            5. Développement des Compétences Internes
+                             <svg class="w-5 h-5 transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div class="accordion-content px-3 pb-3">
+                            <p class="text-sm text-slate-600 pt-2">Formez les équipes aux nouvelles technologies pour une adoption réussie.</p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-lg text-slate-700 mt-8">En adoptant une approche structurée et progressive, votre organisation peut significativement améliorer son processus de suivi contractuel.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-slate-800 text-slate-300 py-8 text-center mt-12">
+        <p class="text-sm">&copy; 2025 Explorateur Interactif IA. Inspiré par le rapport "Optimisation de l'Extraction de Clauses Contractuelles par l'IA".</p>
+    </footer>
+
+    <script>
+        const navButtons = document.querySelectorAll('.nav-button');
+        const contentSections = document.querySelectorAll('.content-section');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        function setActiveSection(targetId) {
+            contentSections.forEach(section => {
+                section.classList.toggle('active', section.id === targetId);
+            });
+            navButtons.forEach(button => {
+                const isActive = button.dataset.target === targetId;
+                button.classList.toggle('active', isActive);
+                if (!button.classList.contains('solution-tab-button')) { // Avoid re-styling tabs here
+                     button.classList.toggle('bg-sky-800', isActive); // More specific active style for main nav
+                     button.classList.toggle('text-white', isActive);
+                }
+            });
+            // Scroll to top of main content for better UX on section change, not for tabs
+            if (document.getElementById(targetId) && document.getElementById(targetId).classList.contains('content-section')) {
+                 // Simple scroll to top of the new section, if it makes sense.
+                 // Be careful with fixed headers, might need an offset.
+                 // window.scrollTo(0, 0); // Or targetted scroll if header is fixed
+            }
+        }
+        
+        navButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.target;
+                setActiveSection(targetId);
+                if (mobileMenu.classList.contains('block') && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        const solutionTabButtons = document.querySelectorAll('.solution-tab-button');
+        const solutionTabContents = document.querySelectorAll('.solution-tab-content');
+
+        solutionTabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetSolutionId = button.dataset.solutiontarget;
+
+                solutionTabButtons.forEach(btn => {
+                    btn.classList.remove('active', 'border-amber-500', 'text-amber-500');
+                    btn.classList.add('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'hover:border-slate-300');
+                });
+                button.classList.add('active', 'border-amber-500', 'text-amber-500');
+                button.classList.remove('border-transparent', 'text-slate-500', 'hover:text-slate-700', 'hover:border-slate-300');
+
+                solutionTabContents.forEach(content => {
+                    content.classList.toggle('active', content.id === targetSolutionId);
+                });
+            });
+        });
+        
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('svg');
+                const isOpen = header.classList.contains('open');
+
+                // Optional: Close other open accordions in the same logical group if needed
+                // This requires a common parent or a more complex selector logic
+
+                if (isOpen) {
+                    content.style.maxHeight = null;
+                    header.classList.remove('open');
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    header.classList.add('open');
+                }
+            });
+        });
+        
+        setActiveSection('accueil');
+    </script>
+</body>
+</html>
